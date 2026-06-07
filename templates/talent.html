@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Talent Hub</h2>
+<p>
+    Find and connect with top-performing learners.
+    A monthly subscription is required to contact candidates.
+</p>
+
+<h3>Company Subscription</h3>
+<table>
+    <tr>
+        <td>Basic plan</td>
+        <td>R499 / month</td>
+    </tr>
+    <tr>
+        <td>10 candidate contacts per month</td>
+        <td>Included</td>
+    </tr>
+    <tr>
+        <td>Advanced skill filters</td>
+        <td>Included</td>
+    </tr>
+</table>
+<button>Subscribe Now</button>
+
+<h3>Top Performing Learners</h3>
+
+{% if learners %}
+{% for learner in learners %}
+<p>
+    {{ learner['Username'] }} —
+    {{ learner['total'] }} total skill points
+</p>
+<p>
+    {% if learner['skills'] %}
+    {{ learner['skills'] }}
+    {% endif %}
+</p>
+<button onclick="alert('Subscribe to contact this learner.')">
+    Contact
+</button>
+<hr>
+{% endfor %}
+{% else %}
+<p>No learners have completed courses yet.</p>
+{% endif %}
+
+{% endblock %}
