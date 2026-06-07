@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Development Software</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="{{ url_for('dashboard') }}" class="brand">SkillsDev</a>
+    <div>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('courses') }}">Courses</a>
+        <a href="{{ url_for('profile') }}">My Profile</a>
+        <a href="{{ url_for('talent') }}">Talent Hub</a>
+        <a href="{{ url_for('logout') }}"
+           style="color:rgba(255,255,255,0.4)">Logout</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <p style="
+                        padding: 12px;
+                        border-radius: 6px;
+                        margin-bottom: 14px;
+                        font-size: 14px;
+                        background: {% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+                        color: {% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
+        {{ message }}
+    </p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+</div>
+
+</body>
+</html>
