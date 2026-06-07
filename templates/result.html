@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Assessment Result</h2>
+
+<p>Course: {{ course['CourseName'] }}</p>
+<p>Skill: {{ course['SkillName'] }}</p>
+<p>Your score: {{ score }}%</p>
+<p>Skill credits earned: {{ credits }} pts</p>
+
+{% if score >= 90 %}
+<p>Excellent work! Outstanding score — you earned full skill credits.</p>
+{% elif score >= 70 %}
+<p>Well done! Great score — you earned most of the available credits.</p>
+{% elif score >= 50 %}
+<p>You passed! There is room to improve.</p>
+{% else %}
+<p>Not quite there. You scored below 50%. No credits were awarded.</p>
+{% endif %}
+
+{% if score >= 70 %}
+<p>Certificate: Awarded</p>
+{% endif %}
+
+{% if score < 50 %}
+<p>Retake available — R50 fee applies for your next attempt.</p>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}">
+    <button>Go to Dashboard</button>
+</a>
+
+<a href="{{ url_for('courses') }}">
+    <button>Browse More Courses</button>
+</a>
+
+{% endblock %}
