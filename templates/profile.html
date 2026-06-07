@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>My Profile</h2>
+<p>{{ user['Username'] }}</p>
+<p>{{ total_pts }} total skill points</p>
+<p>Visible to employers on the Talent Hub</p>
+
+<h3>Verified Skill Scores</h3>
+<p>
+    These scores are calculated from your course results
+    and are visible to companies on the Talent Hub.
+</p>
+
+{% if skills %}
+{% for skill in skills %}
+<p>
+    {{ skill['SkillName'] }} —
+    {{ skill['TotalPoints'] }} pts —
+    {{ get_skill_level(skill['TotalPoints']) }}
+</p>
+{% endfor %}
+{% else %}
+<p>No skill scores yet. Complete a course to earn skill points.</p>
+{% endif %}
+
+<h3>Certificates Earned</h3>
+
+{% if certs %}
+<table>
+    <thead>
+    <tr>
+        <th>Course</th>
+        <th>Date Issued</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cert in certs %}
+    <tr>
+        <td>{{ cert['CourseName'] }}</td>
+        <td>{{ cert['IssueDate'] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>
+    No certificates yet.
+    Score 70% or above on a course to earn a certificate.
+</p>
+{% endif %}
+
+{% endblock %}
