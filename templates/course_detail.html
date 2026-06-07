@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<p><a href="{{ url_for('courses') }}">← Back to courses</a></p>
+
+<h2>{{ course['CourseName'] }}</h2>
+<p class="muted">{{ course['SkillName'] }} — {{ course['Duration'] }} minutes</p>
+<p>{{ course['Description'] }}</p>
+
+<h3>Skill Credits</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Score achieved</th>
+            <th>Credits earned</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>90% – 100%</td>
+            <td>{{ course['SkillCredits'] }} pts (full credits)</td>
+        </tr>
+        <tr>
+            <td>70% – 89%</td>
+            <td>{{ (course['SkillCredits'] * 0.75) | int }} pts</td>
+        </tr>
+        <tr>
+            <td>50% – 69%</td>
+            <td>{{ (course['SkillCredits'] * 0.50) | int }} pts</td>
+        </tr>
+        <tr>
+            <td>Below 50%</td>
+            <td>0 pts — no credits awarded</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Attempt Pricing</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Attempt</th>
+            <th>Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1st attempt</td>
+            <td style="color:#155724"><strong>Free</strong></td>
+        </tr>
+        <tr>
+            <td>2nd attempt (retake)</td>
+            <td style="color:#856404"><strong>R50</strong></td>
+        </tr>
+        <tr>
+            <td>3rd attempt (final)</td>
+            <td style="color:#721c24"><strong>R100</strong></td>
+        </tr>
+        <tr>
+            <td>Maximum attempts</td>
+            <td><strong>3 per course</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+{% if attempts >= 3 %}
+    <p style="background:#f8d7da;color:#721c24;padding:12px;border-radius:6px;margin-top:16px">
+        You have reached the maximum of 3 attempts for this course.
+        No further attempts are allowed.
+    </p>
+
+{% elif attempts == 2 %}
+    <p style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-top:16px">
+        This will be your 3rd and final attempt. A fee of R100 applies.
+    </p>
+    <a href="{{ url_for('assessment', course_id=course['CourseID']) }}">
+        <button>Pay R100 — Final Attempt</button>
+    </a>
+
+{% elif attempts == 1 %}
+    <p style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-top:16px">
+        You have already attempted this course once. A retake fee of R50 applies.
+    </p>
+    <a href="{{ url_for('assessment', course_id=course['CourseID']) }}">
+        <button>Pay R50 — Retake Course</button>
+    </a>
+
+{% else %}
+    <a href="{{ url_for('start_course', course_id=course['CourseID']) }}">
+        <button>Start Course — Free</button>
+    </a>
+{% endif %}
+
+{% endblock %}
