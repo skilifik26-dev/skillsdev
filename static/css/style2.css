@@ -1,0 +1,151 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* nav bar*/
+.navbar {
+    background: #1F3864;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar img {
+    width: 100px;
+}
+
+.navbar a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 20px;
+}
+
+nav a:hover {
+    color: white;
+}
+
+.container {
+    width: 50%;
+    margin: auto;
+    padding: 30px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px rgba(0,0,0,0.2);
+}
+
+.div {
+    display: flex;
+}
+
+/*login & register*/
+input {
+    width: 75%;
+    padding: 12px;
+    margin: 8px 0;
+}
+
+button {
+    background: #0077cc;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #005fa3;
+}
+
+/*dashbord*/
+.container2 {
+    width: max-content;
+    margin: auto;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 30px;
+}
+
+.expert_badge {
+    background-color: rgb(255, 215, 0);
+    border-radius: 50%;
+    color: black;
+    width: 60px; 
+    height: 60px;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill_level_container {
+    display: flex;
+    justify-items: center;
+    justify-content: space-around;
+    background-color: rgb(143, 193, 243);
+    padding: 5px;
+    height: max-content;
+    border-radius: 10px; 
+}
+
+.right_bar {
+    margin-top: 10px;
+    padding: 5px;
+    height: max-content;
+    border: solid 2px #1F3864; 
+    border-radius: 10px; 
+    text-align: center;
+}
+
+.completed_course_disp {
+    margin-top: 10px;
+    height: 30px;
+    width:70%;
+    color: black;
+    padding: 20px;
+    border: solid 5px green;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.completed_course_disp:hover {
+    background-color: antiquewhite;
+    cursor: pointer;
+}
+
+.retake_btn {
+    width: max-content;
+    background-color: red;
+    border: none;
+    border-radius: 10px;
+    float: right;
+    align-items: center;
+}
+
+/*What to learn container*/
+.what_to_lean_cont {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.what_to_lean_cont div {
+
+}
+
+.what_to_lean_cont div span{
+    display: block;
+    font-size: small;
+}

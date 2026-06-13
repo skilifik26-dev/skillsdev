@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Library</title>
+        <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style2.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <img src="../static/pictures/skillifik (3).png" alt="SkilliFik logo"/>
+    <div>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('courses') }}">Courses</a>
+        <a href="{{ url_for('profile') }}">My Profile</a>
+        <a href="{{ url_for('talent') }}">Talent Hub</a>
+        <a href="{{ url_for('logout') }}"
+           style="color:rgba(255,255,255,0.4)">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h1>Course Library</h1>
+    {%if courses%}
+        {%for course in courses%}
+            <div class="card">
+                <h3>{{course['CourseName']}}</h3>
+                <p>{{course['Description']}}</p>
+                <p>Skill: {{course['SkillName']}}</p>
+                <p>Duration: {{course['Duration']}} minutes</p>
+                <p>Total credits: {{course['SkillCredits']}}</p>
+            </div>
+        {%endfor%}
+    {%endif%}
+
+</div>
+
+</body>
+</html>

@@ -86,9 +86,9 @@ SAMPLE_COURSES = [
 ]
 
 SAMPLE_RECENT = [
-    {'CourseID': 1, 'CourseName': 'Excel Fundamentals',      'Status': 'pass'},
-    {'CourseID': 3, 'CourseName': 'Python for Beginners',    'Status': 'pass'},
-    {'CourseID': 4, 'CourseName': 'Python for Data Analysis','Status': 'fail'},
+    {'CourseID': 1, 'CourseName': 'Excel Fundamentals',      'Status': 'Pass'},
+    {'CourseID': 3, 'CourseName': 'Python for Beginners',    'Status': 'Pass'},
+    {'CourseID': 4, 'CourseName': 'Python for Data Analysis','Status': 'Fail'},
 ]
 
 SAMPLE_CERTS = [
@@ -208,16 +208,19 @@ def dashboard():
     return render_template('dashboard.html',
         skill_scores   = SAMPLE_SKILLS,
         recent         = SAMPLE_RECENT,
+        courses        = SAMPLE_COURSES,
         total_pts      = 252,
         courses_done   = 4,
         skills_unlocked= 3,
-        get_skill_level= get_skill_level)
+        get_skill_level= get_skill_level,
+        user = SAMPLE_USER)
 
 #Course Library
 @app.route('/courses')
 def courses():
-    return render_template('courses.html',
-        courses = SAMPLE_COURSES)
+    return render_template('course_library.html',
+        courses = SAMPLE_COURSES 
+        )
 
 #Course Detail
 @app.route('/course_detail')
