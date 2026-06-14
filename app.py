@@ -14,12 +14,22 @@ def get_skill_level(pts):
 
 #SAMPLE DATA 
 
-SAMPLE_USER = {
+SAMPLE_USER = [
+    {
     'UserID':   1,
     'Username': 'Dominique Minaar',
     'Email':    'dominique@test.com',
-    'Role':     'learner'
-}
+    'Role':     'learner',
+    'Password': 'Dominique123'
+    },
+    {
+    'UserID':   1,
+    'Username': 'Dominique Minaar',
+    'Email':    'dominique@test.com',
+    'Role':     'learner',
+    'Password': 'Dominique123'
+    },
+]
 
 SAMPLE_SKILLS = [
     {'SkillName': 'Microsoft Excel',     'TotalPoints': 82},
@@ -174,8 +184,8 @@ SAMPLE_QUESTIONS = [
 def set_session():
     if 'user_id' not in session:
         session['user_id'] = 1
-        session['username'] = 'Dominique Minaar'
-        session['role'] = 'learner'
+        session['username'] = 'Dominique'
+        session['role'] = 'Dominique123'
 
 #Home
 @app.route('/')
@@ -186,8 +196,15 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        return redirect(url_for('dashboard'))
+        username = request.form['username']
+        password = request.form['password']
+        for user in SAMPLE_USER:
+            if user['Username'] == username and user['Password'] == password:
+                session['user'] = user
+                return redirect(url_for('dashboard'))
+            return render_template('login.html')
     return render_template('login.html')
+        
 
 #Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -205,7 +222,9 @@ def logout():
 #Dashboard
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html',
+    if 'user' in session:
+        user = session['user'] 
+    return render_template('dashboard.html', 
         skill_scores   = SAMPLE_SKILLS,
         recent         = SAMPLE_RECENT,
         courses        = SAMPLE_COURSES,
@@ -213,7 +232,8 @@ def dashboard():
         courses_done   = 4,
         skills_unlocked= 3,
         get_skill_level= get_skill_level,
-        user = SAMPLE_USER)
+        users= user
+        )
 
 #Course Library
 @app.route('/courses')

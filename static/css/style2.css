@@ -48,11 +48,11 @@ nav a:hover {
 
 input {
     display: block;
-    width: 97%;
+    width: 100%;
     font-size: large;
     padding: 10px;
-    margin-bottom: 10px
-
+    margin-bottom: 10px;
+    box-sizing: border-box;
 }
 
 .btn {
