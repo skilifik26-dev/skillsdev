@@ -20,22 +20,25 @@
     </div>
 </nav>
 
-<div class="container">
-
+<div class="main_container">
     <h1>Course Library</h1>
-    {%if courses%}
-        {%for course in courses%}
-            <div class="card">
-                <h3>{{course['CourseName']}}</h3>
-                <p>{{course['Description']}}</p>
-                <p>Skill: {{course['SkillName']}}</p>
-                <p>Duration: {{course['Duration']}} minutes</p>
-                <p>Total credits: {{course['SkillCredits']}}</p>
-            </div>
-        {%endfor%}
-    {%endif%}
-
+    <div class="card">
+        <div  class="what_to_learn_cont">
+        {%if courses%}
+            {%for course in courses%}
+                <div>
+                    <h3>{{course['CourseName']}}</h3>
+                    <p>{{course['Description']}}</p>
+                    <p>Skill: {{course['SkillName']}}</p>
+                    <p>Duration: {{course['Duration']}} minutes</p>
+                    <p>Total credits: {{course['SkillCredits']}}</p>
+                </div>
+            {%endfor%}
+        {%endif%}
+    </div>
+    </div>
 </div>
+
 
 </body>
 </html>

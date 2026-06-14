@@ -29,11 +29,6 @@ nav a:hover {
     color: white;
 }
 
-.container {
-    width: 50%;
-    margin: auto;
-    padding: 30px;
-}
 
 .card {
     background: white;
@@ -43,35 +38,46 @@ nav a:hover {
     box-shadow: 0px 0px 8px rgba(0,0,0,0.2);
 }
 
-.div {
-    display: flex;
-}
 
 /*login & register*/
-input {
-    width: 75%;
-    padding: 12px;
-    margin: 8px 0;
-}
-
-button {
-    background: #0077cc;
-    color: white;
-    border: none;
-    padding: 12px;
-    width: 100%;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #005fa3;
-}
-
-/*dashbord*/
-.container2 {
-    width: max-content;
+.container {
+    width: 40%;
     margin: auto;
+    padding: 30px;
+}
+
+input {
+    display: block;
+    width: 97%;
+    font-size: large;
     padding: 10px;
+    margin-bottom: 10px
+
+}
+
+.btn {
+    font-size: large;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background: #026ebb 
+}
+
+.btn:hover {
+    background: #005fa3;
+    cursor: pointer;
+    transition: 500ms;
+}
+
+/*dashbord, course lib*/
+.main_container {
+    padding: 50px;
+}
+
+.container2 {
+    width: 100%;
+    margin: auto;
     display: grid;
     grid-template-columns: 4fr 1fr;
     gap: 30px;
@@ -113,7 +119,7 @@ button:hover {
     width:70%;
     color: black;
     padding: 20px;
-    border: solid 5px green;
+    border: solid 5px rgb(48, 163, 48);
     border-radius: 10px;
     display: flex;
     justify-content: space-between;
@@ -121,31 +127,47 @@ button:hover {
 }
 
 .completed_course_disp:hover {
-    background-color: antiquewhite;
+    background-color: rgb(246, 241, 234);
     cursor: pointer;
 }
 
 .retake_btn {
     width: max-content;
-    background-color: red;
+    padding: 10px;
+    color: white;
+    background-color: rgb(248, 73, 73);
     border: none;
     border-radius: 10px;
     float: right;
     align-items: center;
 }
 
-/*What to learn container*/
-.what_to_lean_cont {
-    display: flex;
-    gap: 10px;
+.retake_btn:hover {
+    background-color: rgb(58, 124, 236);
+    transition: 500ms;
+}
+
+/*What to learn next container*/
+.what_to_learn_cont {
     width: 100%;
+    display: flex;
+    gap: 10px; 
+    overflow-y: show;
+    overflow-x: hidden;   
 }
 
-.what_to_lean_cont div {
-
+.what_to_learn_cont div {
+    width: 300px;
+    padding: 10px;
+    border: solid 1px white;
 }
 
-.what_to_lean_cont div span{
+.what_to_learn_cont div:hover{
+    cursor: pointer;
+    border: solid 1px #1F3864;
+}
+
+.what_to_learn_cont div span{
     display: block;
     font-size: small;
 }

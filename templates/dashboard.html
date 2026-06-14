@@ -19,35 +19,64 @@
     </div>
 </nav>
 
-<div class="container2">
-
-    <div>
-        <h1>Dashboard</h1>
+<div class="main_container">
+    <div class="container2">
         <div>
-            <h3>Welcome {{user['Username']}}</h3>
-            <p>Continue learning and improve your skills.</p>
-        </div>
-        <div class="card">
-            <h3>Your Progress</h3>
+            <h1>Dashboard</h1>
+            <div>
+                <h3>Welcome {{user['Username']}}</h3>
+                <p>Continue learning and improve your skills.</p>
+            </div>
+            <div class="card">
+                <h3>Your Progress</h3>
+                <p>Courses Completed</p>
+                {%if recent%}
+                    {%for course in recent%}
+                        {%if course['Status'] == "Pass"%}
+                            <div class="completed_course_disp"">
+                                <span>{{course['CourseName']}}</span> <span>&check;</span>
+                            </div>
+                        {%else%}
+                            <div class="completed_course_disp" style="border: solid 5px rgb(248, 73, 73);">
+                                {{course['CourseName']}} <button class="retake_btn">Retake</button>
+                            </div>
+                        {%endif%}
+                    {%endfor%}
+                {%endif%}                      
+            </div>
 
-            <p>Courses Completed</p>
-            {%if recent%}
-                {%for course in recent%}
-                    {%if course['Status'] == "Pass"%}
-                        <div class="completed_course_disp"">
-                            <span>{{course['CourseName']}}</span> <span>&check;</span>
-                        </div>
-                    {%else%}
-                        <div class="completed_course_disp" style="border: solid 5px red;">
-                            {{course['CourseName']}} <button class="retake_btn">Retake</button>
-                        </div>
-                    {%endif%}
-                {%endfor%}
-            {%endif%}                      
         </div>
 
-        <h3>What to learn next</h3>
-        <div class="what_to_lean_cont">
+        <div>
+            <div class="skill_level_container">
+                <h5>Skill level</h5>
+                <div class="expert_badge">{{get_skill_level(total_pts)}}</div>
+            </div>
+
+            <div class="right_bar">
+                <div>
+                    <h5>Completed courses</h5>
+                    <span>{{courses_done}}</span>
+                </div>
+
+                <div>
+                    <h5>Skills Unlocked</h5>
+                    <span>{{skills_unlocked}}</span>
+                </div>
+
+                <div>
+                    <h5>Total Points</h5>
+                    <span>{{total_pts}}</span>
+                </div>
+            </div>
+        
+        </div>
+
+    </div>
+
+    <h3>What to learn next</h3>
+    <div class="card">
+        <div class="what_to_learn_cont">
             {%for course in courses%}   
                 {%if course['attempts'] == 0%} 
                     <div>
@@ -60,31 +89,6 @@
                 {%endif%} 
             {%endfor%}     
         </div>
-     </div>
-
-    <div>
-        <div class="skill_level_container">
-            <h5>Skill level</h5>
-            <div class="expert_badge">{{get_skill_level(total_pts)}}</div>
-        </div>
-
-        <div class="right_bar">
-            <div>
-                <h5>Completed courses</h5>
-                <span>{{courses_done}}</span>
-            </div>
-
-            <div>
-                <h5>Skills Unlocked</h5>
-                <span>{{skills_unlocked}}</span>
-            </div>
-
-            <div>
-                <h5>Total Points</h5>
-                <span>{{total_pts}}</span>
-            </div>
-        </div>
-       
     </div>
 
 </div>

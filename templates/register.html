@@ -9,38 +9,40 @@
 </head>
 <body>
 
+    <div class="container">
+        <div class="card">
+            <h2>Create Account</h2>
 
-    <div class="form-section register">
-        <h2>Create Account</h2>
+            <form action="/register" method="POST">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" name="fullname" required>
+                </div>
 
-        <form action="#" method="POST">
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" name="fullname" required>
-            </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
 
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" required>
+                </div>
 
-            <div class="input-group">
-                <label>Username</label>
-                <input type="text" name="username" required>
-            </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirm_password" required>
+                </div>
 
-            <div class="input-group">
-                <label>Confirm Password</label>
-                <input type="password" name="confirm_password" required>
-            </div>
-
-            <button type="submit">Register</button>
-        </form>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
     </div>
+    
 </body>
 </html>
