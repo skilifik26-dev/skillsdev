@@ -38,7 +38,7 @@
                             </div>
                         {%else%}
                             <div class="completed_course_disp" style="border: solid 5px rgb(248, 73, 73);">
-                                {{course['CourseName']}} <button class="retake_btn">Retake</button>
+                                {{course['CourseName']}} <a href="{{ url_for('course_detail', course_Id = course['CourseID'])}}"><button class="retake_btn">Retake</button></a>
                             </div>
                         {%endif%}
                     {%endfor%}
@@ -79,6 +79,7 @@
         <div class="what_to_learn_cont">
             {%for course in courses%}   
                 {%if course['attempts'] == 0%} 
+                <a href="{{ url_for('course_detail', course_Id = course['CourseID'])}}" >
                     <div>
                         <h4>{{course['CourseName']}}</h4>
                         <p>{{course['Description']}}</p>
@@ -86,6 +87,7 @@
                         <span>Duration: {{course['Duration']}} minutes</span>
                         <span>Points: {{course['SkillCredits']}}</span>
                     </div>
+                </a>                      
                 {%endif%} 
             {%endfor%}     
         </div>

@@ -5,6 +5,10 @@ body {
     padding: 0;
 }
 
+a {
+    text-decoration: none;
+    color: black;
+}
 /* nav bar*/
 .navbar {
     background: #1F3864;
@@ -145,18 +149,36 @@ input {
 .retake_btn:hover {
     background-color: rgb(58, 124, 236);
     transition: 500ms;
+    cursor: pointer;
 }
+
+.course_lib {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.course_lib a {
+    padding: 10px;
+    border: solid 1px white;
+}
+
+.course_lib a:hover {
+    cursor: pointer;
+    border: solid 1px #1F3864;
+}
+
+
 
 /*What to learn next container*/
 .what_to_learn_cont {
     width: 100%;
     display: flex;
-    gap: 10px; 
-    overflow-y: show;
-    overflow-x: hidden;   
+    gap: 10px;    
 }
 
-.what_to_learn_cont div {
+.what_to_learn_cont a div {
     width: 300px;
     padding: 10px;
     border: solid 1px white;

@@ -23,11 +23,11 @@ SAMPLE_USER = [
     'Password': 'Dominique123'
     },
     {
-    'UserID':   1,
-    'Username': 'Dominique Minaar',
-    'Email':    'dominique@test.com',
+    'UserID':   2,
+    'Username': 'Flavi',
+    'Email':    'flavi@test.com',
     'Role':     'learner',
-    'Password': 'Dominique123'
+    'Password': 'Flavi123'
     },
 ]
 
@@ -243,12 +243,11 @@ def courses():
         )
 
 #Course Detail
-@app.route('/course_detail')
-@app.route('/course_detail/<int:course_id>')
-def course_detail(course_id=1):
+@app.route('/course_detail/<int:course_Id>')
+def course_detail(course_Id):
     course = next(
-        (c for c in SAMPLE_COURSES if c['CourseID'] == course_id),
-        SAMPLE_COURSES[0]
+        (c for c in SAMPLE_COURSES if c['CourseID'] == course_Id),
+        SAMPLE_COURSES[course_Id]
     )
     attempts = course.get('attempts', 0)
     return render_template('course_detail.html',
