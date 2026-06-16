@@ -11,23 +11,17 @@ def get_skill_level(pts):
     elif pts >= 40: return "Intermediate"
     elif pts > 0:   return "Beginner"
     else:           return "Not started"
+     
 
 #SAMPLE DATA 
-
+newUserId = 1 
 SAMPLE_USER = [
     {
     'UserID':   1,
-    'Username': 'Dominique Minaar',
+    'Username': 'Dominique',
     'Email':    'dominique@test.com',
     'Role':     'learner',
     'Password': 'Dominique123'
-    },
-    {
-    'UserID':   2,
-    'Username': 'Flavi',
-    'Email':    'flavi@test.com',
-    'Role':     'learner',
-    'Password': 'Flavi123'
     },
 ]
 
@@ -180,7 +174,7 @@ SAMPLE_QUESTIONS = [
 #ROUTES
 
 # Set dummy session on every request so navbar always shows
-@app.before_request
+# @app.before_request
 def set_session():
     if 'user_id' not in session:
         session['user_id'] = 1
@@ -202,7 +196,7 @@ def login():
             if user['Username'] == username and user['Password'] == password:
                 session['user'] = user
                 return redirect(url_for('dashboard'))
-            return render_template('login.html')
+            return render_template('login.html')              
     return render_template('login.html')
         
 
@@ -210,20 +204,41 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        return redirect(url_for('dashboard'))
+        if request.form['password'] == request.form['confirm_password']:
+            newUser = {
+                'UserID': 5,
+                'Username': request.form['firstName'],
+                'Email':    request.form['email'],
+                'Role': request.form['role'],
+                'Password': request.form['confirm_password'],             
+                }
+            SAMPLE_USER.append(newUser)
+            session['user'] = newUser
+            print(newUser)
+            return redirect(url_for('dashboard'))
+            
+        return render_template('register.html', 
+            message= 'Password does not match confirmed password.',
+            firstName= request.form['firstName'], 
+            surname= request.form['surname'],
+            email= request.form['email'],
+
+            )
     return render_template('register.html')
 
 #Logout
 @app.route('/logout')
 def logout():
     session.clear()
+    print(session)
     return redirect(url_for('login'))
 
 #Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'user' in session:
-        user = session['user'] 
+        user = session['user']
+        print(user)
     return render_template('dashboard.html', 
         skill_scores   = SAMPLE_SKILLS,
         recent         = SAMPLE_RECENT,
@@ -233,7 +248,7 @@ def dashboard():
         skills_unlocked= 3,
         get_skill_level= get_skill_level,
         users= user
-        )
+    )
 
 #Course Library
 @app.route('/courses')

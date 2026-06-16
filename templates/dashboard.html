@@ -33,7 +33,7 @@
                 {%if recent%}
                     {%for course in recent%}
                         {%if course['Status'] == "Pass"%}
-                            <div class="completed_course_disp"">
+                            <div class="completed_course_disp">
                                 <span>{{course['CourseName']}}</span> <span>&check;</span>
                             </div>
                         {%else%}

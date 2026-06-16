@@ -9,6 +9,8 @@ a {
     text-decoration: none;
     color: black;
 }
+
+
 /* nav bar*/
 .navbar {
     background: #1F3864;
@@ -50,13 +52,28 @@ nav a:hover {
     padding: 30px;
 }
 
-input {
+input[type="text"],
+input[type="password"],
+input[type="email"] {
     display: block;
     width: 100%;
     font-size: large;
     padding: 10px;
     margin-bottom: 10px;
     box-sizing: border-box;
+}
+
+.register_a {
+    color: rgb(47, 47, 240);
+}
+
+.radio_container {
+    margin-bottom: 10px;
+
+}
+
+.match_pwd_errorMsg {
+    color: red;
 }
 
 .btn {
