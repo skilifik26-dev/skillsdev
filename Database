@@ -1,0 +1,101 @@
+-- ──────────────────────────────────────────────────────────────
+-- SKILLS DEVELOPMENT SOFTWARE - FULL DATABASE SETUP
+-- Run this file once to create the database and all tables
+-- ──────────────────────────────────────────────────────────────
+
+-- Create the database
+CREATE DATABASE IF NOT EXISTS skillsdevelopmentdb;
+USE skillsdevelopmentdb;
+
+-- ── USERS ──────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+  UserID      INT          NOT NULL AUTO_INCREMENT,
+  Username    VARCHAR(50)  NOT NULL,
+  Email       VARCHAR(100) NOT NULL,
+  Password    VARCHAR(255) NOT NULL,
+  PhoneNumber VARCHAR(20)  DEFAULT NULL,
+  Role        VARCHAR(50)  DEFAULT 'Student',
+  PRIMARY KEY (UserID),
+  UNIQUE KEY (Username),
+  UNIQUE KEY (Email)
+);
+
+-- ── COURSES ────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS courses (
+  CourseID     INT          NOT NULL AUTO_INCREMENT,
+  CourseName   VARCHAR(100) NOT NULL,
+  Duration     INT          DEFAULT NULL,
+  Description  TEXT,
+  SkillCredits INT          DEFAULT 0,
+  PRIMARY KEY (CourseID)
+);
+
+-- ── SKILLS ─────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS skills (
+  SkillID          INT          NOT NULL AUTO_INCREMENT,
+  SkillName        VARCHAR(100) NOT NULL,
+  SkillCategory    VARCHAR(100) DEFAULT NULL,
+  SkillDescription TEXT,
+  SkillLevel       VARCHAR(50)  DEFAULT NULL,
+  CourseID         INT          NOT NULL,
+  PRIMARY KEY (SkillID),
+  FOREIGN KEY (CourseID) REFERENCES courses (CourseID) ON DELETE CASCADE
+);
+
+-- ── ENROLLMENTS ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS enrollments (
+  EnrollmentID   INT         NOT NULL AUTO_INCREMENT,
+  UserID         INT         NOT NULL,
+  CourseID       INT         NOT NULL,
+  EnrollmentDate DATE        DEFAULT NULL,
+  Status         VARCHAR(50) DEFAULT NULL,
+  Progress       INT         DEFAULT 0,
+  PRIMARY KEY (EnrollmentID),
+  FOREIGN KEY (UserID)   REFERENCES users   (UserID)   ON DELETE CASCADE,
+  FOREIGN KEY (CourseID) REFERENCES courses (CourseID) ON DELETE CASCADE
+);
+
+-- ── ASSESSMENTS ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS assessments (
+  AssessmentID   INT          NOT NULL AUTO_INCREMENT,
+  CourseID       INT          NOT NULL,
+  AssessmentName VARCHAR(100) NOT NULL,
+  TotalMarks     INT          NOT NULL,
+  PassMark       INT          NOT NULL,
+  PRIMARY KEY (AssessmentID),
+  FOREIGN KEY (CourseID) REFERENCES courses (CourseID) ON DELETE CASCADE
+);
+
+-- ── QUESTIONS ──────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS questions (
+  QuestionID     INT          NOT NULL AUTO_INCREMENT,
+  AssessmentID   INT          NOT NULL,
+  QuestionText   VARCHAR(500) NOT NULL,
+  OptionA        VARCHAR(255) NOT NULL,
+  OptionB        VARCHAR(255) NOT NULL,
+  OptionC        VARCHAR(255) NOT NULL,
+  OptionD        VARCHAR(255) NOT NULL,
+  CorrectAnswer  CHAR(1)      NOT NULL,
+  PRIMARY KEY (QuestionID),
+  FOREIGN KEY (AssessmentID) REFERENCES assessments (AssessmentID) ON DELETE CASCADE
+);
+
+-- ── LEARNING MATERIALS ─────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS learning_materials (
+  MaterialID       INT          NOT NULL AUTO_INCREMENT,
+  CourseID         INT          NOT NULL,
+  SkillID          INT          DEFAULT NULL,
+  MaterialTitle    VARCHAR(255) NOT NULL,
+  MaterialType     VARCHAR(50)  DEFAULT NULL,
+  SourcePlatform   VARCHAR(100) DEFAULT NULL,
+  MaterialURL      TEXT,
+  Description      TEXT,
+  DifficultyLevel  VARCHAR(50)  DEFAULT NULL,
+  PRIMARY KEY (MaterialID),
+  FOREIGN KEY (CourseID) REFERENCES courses (CourseID) ON DELETE CASCADE,
+  FOREIGN KEY (SkillID)  REFERENCES skills  (SkillID)  ON DELETE SET NULL
+);
+
+-- ── ASSESSMENT MATERIALS ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS assessment_materials (
+... (1 line left)
