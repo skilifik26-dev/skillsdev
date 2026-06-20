@@ -211,10 +211,9 @@ def register():
                 'Email':    request.form['email'],
                 'Role': request.form['role'],
                 'Password': request.form['confirm_password'],             
-                }
+            },
             SAMPLE_USER.append(newUser)
             session['user'] = newUser
-            print(newUser)
             return redirect(url_for('dashboard'))
             
         return render_template('register.html', 
