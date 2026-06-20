@@ -9,92 +9,61 @@
 </head>
 <body>
 
-{% for message in get_flashed_messages() %}
-    <p style="padding:12px;background:#d4edda;color:#155724;border-radius:6px;margin:10px">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <p style="padding:12px;border-radius:6px;margin:10px;
+              background:{% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+              color:{% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
         {{ message }}
     </p>
-{% endfor %}
+    {% endfor %}
+{% endif %}
+{% endwith %}
 
-    <div class="container">
-        <div class="card">
-            <h2>Create Account</h2>
+<div class="container">
+    <div class="card">
+        <h2>Create Account</h2>
 
-            <form action="/register" method="POST">
-<<<<<<< HEAD
-                <div>
-                    <label>First Name(s)</label>
-                    {%if firstName%}
-                        <input type="text" name="firstName" value={{firstname}} required>
-                    {%else%}    
-                        <input type="text" name="firstName" required>
-                    {%endif%}                    
-=======
-                <div class="input-group">
-                    <label>Full Name</label>
-                    <input type="text" name="username" required>
->>>>>>> 2cf792ee04c8dcd3270da417b5f2071ada65c026
-                </div>
+        <form action="/register" method="POST">
 
-                <div>
-                    <label>Surname</label>
-                    {%if surname%}
-                        <input type="text" name="surname" value="{{surname}}" required>
-                    {%else%}    
-                        <input type="text" name="surname" required>
-                    {%endif%}  
-                </div>
+            <div>
+                <label>Full Name</label>
+                <input type="text" name="username" required>
+            </div>
 
-                <div>
-                    <label>Email</label>
-                    {%if email%}
-                        <input type="email" name="email" value="{{email}}" required>
-                    {%else%}    
-                        <input type="email" name="email" required>
-                    {%endif%} 
-                </div>
+            <div>
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
 
-<<<<<<< HEAD
-                <div class="radio_container">
-                    <label>Learner</label><input class="radio_input" type="radio" name="role" value="Learner" required />
-                    <label>Employer</label><input class="radio_input" type="radio" name="role" value="Employer" required />
-=======
-                <div class="input-group">
-                    <label>Phone Number</label>
-                    <input type="text" name="phone">
->>>>>>> 2cf792ee04c8dcd3270da417b5f2071ada65c026
-                </div>
+            <div>
+                <label>Phone Number</label>
+                <input type="text" name="phone">
+            </div>
 
-                <div>
-                    <label>Password</label>
-                    <input type="password" name="password" required>
-                </div>
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
 
-                <div>
-                    <label>Confirm Password</label>
-                    <input type="password" name="confirm_password">
-                </div>
-                {%if message%}
-                    <p class="match_pwd_errorMsg">{{message}}</p>
-                {%endif%}
+            <div>
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password">
+            </div>
 
-<<<<<<< HEAD
-                <p>By signing up for Codecademy, you agree to Skillifik's <a class="register_a" href="">Terms of Service</a> & 
-                    <a class="register_a" href="">Privacy Policy</a>.</p>
-                <button type="submit" class="btn">Register</button>
-                <p>Already have an account? <a class="register_a" href="{{ url_for('login')}}">login</a></p> 
-=======
-                <p>By signing up you agree to Skillifik's
-                    <a href="">Terms of Service</a> &
-                    <a href="">Privacy Policy</a>.
-                </p>
-                <button type="submit" class="btn">Register</button>
-                <p>Already have an account?
-                    <a href="{{ url_for('login') }}">login</a>
-                </p>
->>>>>>> 2cf792ee04c8dcd3270da417b5f2071ada65c026
-            </form>
-        </div>
+            <p>By signing up you agree to Skillifik's
+                <a href="">Terms of Service</a> &
+                <a href="">Privacy Policy</a>.
+            </p>
+            <button type="submit" class="btn">Register</button>
+            <p>Already have an account?
+                <a href="{{ url_for('login') }}">login</a>
+            </p>
+
+        </form>
     </div>
+</div>
 
 </body>
 </html>
