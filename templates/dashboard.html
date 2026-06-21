@@ -1,99 +1,99 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-        <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style2.css') }}">
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
 
-<nav class="navbar">
-    <img src="../static/pictures/skillifik (3).png" alt="SkilliFik logo"/>
-    <div>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('courses') }}">Courses</a>
-        <a href="{{ url_for('profile') }}">My Profile</a>
-        <a href="{{ url_for('talent') }}">Talent Hub</a>
-        <a href="{{ url_for('logout') }}"
-           style="color:rgba(255,255,255,0.4)">Logout</a>
+<h1>Dashboard</h1>
+<p>Welcome back, <strong>{{ users['Username'] }}</strong>. Keep building your skills.</p>
+
+<!-- Stats -->
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-val">{{ total_pts }}</div>
+        <div class="metric-lbl">Total Skill Points</div>
     </div>
-</nav>
-
-<div class="main_container">
-    <div class="container2">
-        <div>
-            <h1>Dashboard</h1>
-            <div>
-                <h3>Welcome {{users['Username']}}</h3>
-                <p>Continue learning and improve your skills.</p>
-            </div>
-            <div class="card">
-                <h3>Your Progress</h3>
-                <p>Courses Completed</p>
-                {%if recent%}
-                    {%for course in recent%}
-                        {%if course['Status'] == "Pass"%}
-                            <div class="completed_course_disp">
-                                <span>{{course['CourseName']}}</span> <span>&check;</span>
-                            </div>
-                        {%else%}
-                            <div class="completed_course_disp" style="border: solid 5px rgb(248, 73, 73);">
-                                {{course['CourseName']}} <a href="{{ url_for('course_detail', course_Id = course['CourseID'])}}"><button class="retake_btn">Retake</button></a>
-                            </div>
-                        {%endif%}
-                    {%endfor%}
-                {%endif%}                      
-            </div>
-
-        </div>
-
-        <div>
-            <div class="skill_level_container">
-                <h5>Skill level</h5>
-                <div class="expert_badge">{{get_skill_level(total_pts)}}</div>
-            </div>
-
-            <div class="right_bar">
-                <div>
-                    <h5>Completed courses</h5>
-                    <span>{{courses_done}}</span>
-                </div>
-
-                <div>
-                    <h5>Skills Unlocked</h5>
-                    <span>{{skills_unlocked}}</span>
-                </div>
-
-                <div>
-                    <h5>Total Points</h5>
-                    <span>{{total_pts}}</span>
-                </div>
-            </div>
-        
-        </div>
-
+    <div class="metric-card">
+        <div class="metric-val">{{ courses_done }}</div>
+        <div class="metric-lbl">Courses Completed</div>
     </div>
-
-    <h3>What to learn next</h3>
-    <div class="card">
-        <div class="what_to_learn_cont">
-            {%for course in courses%}   
-                {%if course['attempts'] == 0%} 
-                <a href="{{ url_for('course_detail', course_Id = course['CourseID'])}}" >
-                    <div>
-                        <h4>{{course['CourseName']}}</h4>
-                        <p>{{course['Description']}}</p>
-                        <span>Skill: {{course['SkillName']}}</span>
-                        <span>Duration: {{course['Duration']}} minutes</span>
-                        <span>Points: {{course['SkillCredits']}}</span>
-                    </div>
-                </a>                      
-                {%endif%} 
-            {%endfor%}     
-        </div>
+    <div class="metric-card">
+        <div class="metric-val">{{ skills_unlocked }}</div>
+        <div class="metric-lbl">Skills Unlocked — {{ get_skill_level(total_pts) }}</div>
     </div>
-
 </div>
 
-</body>
-</html>
+<!-- Skill scores -->
+{% if skill_scores %}
+<h3>Your Skill Scores</h3>
+{% for skill in skill_scores %}
+<div class="skill-row">
+    <div class="skill-top">
+        <span>{{ skill['SkillName'] }} — {{ get_skill_level(skill['TotalPoints']) }}</span>
+        <span class="skill-pts">{{ skill['TotalPoints'] }} pts</span>
+    </div>
+    <div class="skill-bar-bg">
+        <div class="skill-bar-fill" style="width: {{ [skill['TotalPoints'], 100] | min }}%"></div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Recent activity -->
+<h3>Recent Activity</h3>
+{% if recent %}
+<table>
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Result</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in recent %}
+        <tr>
+            <td>{{ course['CourseName'] }}</td>
+            <td>
+                {% if course['Status'] == 'Pass' %}
+                    <span class="badge-free">✔ Passed</span>
+                {% else %}
+                    <span class="badge-locked">✘ Failed</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if course['Status'] != 'Pass' %}
+                    <a href="{{ url_for('course_detail', course_Id=course['CourseID']) }}">
+                        <button>Retake</button>
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No courses attempted yet.</p>
+{% endif %}
+
+<!-- What to learn next -->
+<h3>What to Learn Next</h3>
+{% set unattempted = courses | selectattr('attempts', 'equalto', 0) | list %}
+{% if unattempted %}
+<div class="courses-grid">
+    {% for course in unattempted %}
+    <a href="{{ url_for('course_detail', course_Id=course['CourseID']) }}" style="text-decoration:none">
+        <div class="course-card">
+            <h3>{{ course['CourseName'] }}</h3>
+            <p>{{ course['Description'] }}</p>
+            <p style="margin-top:8px"><span class="skill-label">{{ course['SkillName'] }}</span></p>
+            <p class="muted" style="margin-top:8px">
+                {{ course['Duration'] }} min &nbsp;·&nbsp; {{ course['SkillCredits'] }} credits
+            </p>
+            <span class="badge-free">Free first attempt</span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p>You have attempted all available courses.</p>
+{% endif %}
+
+{% endblock %}
