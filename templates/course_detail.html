@@ -73,7 +73,7 @@
     <p style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-top:16px">
         This will be your 3rd and final attempt. A fee of R100 applies.
     </p>
-    <a href="{{ url_for('assessment', course_id=course['CourseID']) }}">
+    <a href="{{ url_for('start_course', course_id=course['CourseID']) }}">
         <button>Pay R100 — Final Attempt</button>
     </a>
 
@@ -81,7 +81,7 @@
     <p style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-top:16px">
         You have already attempted this course once. A retake fee of R50 applies.
     </p>
-    <a href="{{ url_for('assessment', course_id=course['CourseID']) }}">
+    <a href="{{ url_for('start_course', course_id=course['CourseID']) }}">
         <button>Pay R50 — Retake Course</button>
     </a>
 
