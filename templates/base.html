@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skills Development Software</title>
+    <title>SkillsDev</title>
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
 <nav>
-    <a href="{{ url_for('dashboard') }}" class="brand">SkillsDev</a>
+    <a href="{{ url_for('dashboard') }}">
+        <img src="{{ url_for('static', filename='pictures/skillifik (3).png') }}"
+             alt="SkillsDev" style="height:40px;">
+    </a>
     <div>
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('courses') }}">Courses</a>
@@ -26,13 +29,9 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
-    <p style="
-                        padding: 12px;
-                        border-radius: 6px;
-                        margin-bottom: 14px;
-                        font-size: 14px;
-                        background: {% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
-                        color: {% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
+    <p style="padding:12px;border-radius:6px;margin-bottom:14px;font-size:14px;
+              background:{% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+              color:{% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
         {{ message }}
     </p>
     {% endfor %}
