@@ -2,46 +2,70 @@
 {% block content %}
 
 <h2>Talent Hub</h2>
-<p>
-    Find and connect with top-performing learners.
-    A monthly subscription is required to contact candidates.
-</p>
+<p>Find and connect with top-performing learners. A monthly subscription is required to contact candidates.</p>
 
 <h3>Company Subscription</h3>
 <table>
-    <tr>
-        <td>Basic plan</td>
-        <td>R499 / month</td>
-    </tr>
-    <tr>
-        <td>10 candidate contacts per month</td>
-        <td>Included</td>
-    </tr>
-    <tr>
-        <td>Advanced skill filters</td>
-        <td>Included</td>
-    </tr>
+    <thead>
+        <tr>
+            <th>Plan</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>Basic plan</td><td>R499 / month</td></tr>
+        <tr><td>Candidate contacts</td><td>10 per month</td></tr>
+        <tr><td>Advanced skill filters</td><td>Included</td></tr>
+    </tbody>
 </table>
-<button>Subscribe Now</button>
+
+{% if subscribed %}
+    <p style="background:#d4edda;color:#155724;padding:12px;border-radius:6px;margin-top:12px">
+        ✔ You have an active subscription. You can contact learners below.
+    </p>
+{% else %}
+    <p style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-top:12px">
+        You do not have an active subscription. Subscribe to contact learners.
+    </p>
+    <form action="{{ url_for('subscribe') }}" method="POST">
+        <button type="submit" style="margin-top:10px">Subscribe Now — R499/month</button>
+    </form>
+{% endif %}
 
 <h3>Top Performing Learners</h3>
 
 {% if learners %}
-{% for learner in learners %}
-<p>
-    {{ learner['Username'] }} —
-    {{ learner['total'] }} total skill points
-</p>
-<p>
-    {% if learner['skills'] %}
-    {{ learner['skills'] }}
-    {% endif %}
-</p>
-<button onclick="alert('Subscribe to contact this learner.')">
-    Contact
-</button>
-<hr>
-{% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Learner</th>
+            <th>Skills</th>
+            <th>Total Points</th>
+            <th>Contact</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for learner in learners %}
+        <tr>
+            <td><strong>{{ learner['Username'] }}</strong></td>
+            <td class="muted">{{ learner['skills'] if learner['skills'] else '—' }}</td>
+            <td><strong>{{ learner['total'] }} pts</strong></td>
+            <td>
+                {% if subscribed %}
+                    <span style="font-size:13px">
+                        📧 {{ learner['Email'] }}<br>
+                        📞 {{ learner['PhoneNumber'] or 'Not provided' }}
+                    </span>
+                {% else %}
+                    <button onclick="alert('Subscribe to view contact details.')">
+                        Contact
+                    </button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% else %}
 <p>No learners have completed courses yet.</p>
 {% endif %}
