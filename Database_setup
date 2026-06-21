@@ -1,0 +1,167 @@
+-- ============================================================
+-- SKILLS DEVELOPMENT SOFTWARE
+-- SCRIPT 1: CREATE DATABASE AND ALL TABLES
+-- Run this first on a fresh MySQL setup
+-- ============================================================
+
+CREATE DATABASE IF NOT EXISTS skillsdevelopmentdb;
+USE skillsdevelopmentdb;
+
+-- Users table
+-- Stores all learner and company accounts
+CREATE TABLE IF NOT EXISTS users (
+  UserID      INT          NOT NULL AUTO_INCREMENT,
+  Username    VARCHAR(50)  NOT NULL,
+  Email       VARCHAR(100) NOT NULL,
+  Password    VARCHAR(255) NOT NULL,
+  PhoneNumber VARCHAR(20)  DEFAULT NULL,
+  Role        VARCHAR(50)  DEFAULT 'Student',
+  PRIMARY KEY (UserID),
+  UNIQUE KEY (Username),
+  UNIQUE KEY (Email)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Courses table
+-- Stores all available courses
+CREATE TABLE IF NOT EXISTS courses (
+  CourseID     INT          NOT NULL AUTO_INCREMENT,
+  CourseName   VARCHAR(100) NOT NULL,
+  Duration     INT          DEFAULT NULL,
+  Description  TEXT,
+  SkillCredits INT          DEFAULT 0,
+  PRIMARY KEY (CourseID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Skills table
+-- Each course has one skill linked to it
+-- SkillCategory groups skills together (e.g. Java + Python = Programming)
+CREATE TABLE IF NOT EXISTS skills (
+  SkillID          INT          NOT NULL AUTO_INCREMENT,
+  SkillName        VARCHAR(100) NOT NULL,
+  SkillCategory    VARCHAR(100) DEFAULT NULL,
+  SkillDescription TEXT,
+  SkillLevel       VARCHAR(50)  DEFAULT NULL,
+  CourseID         INT          NOT NULL,
+  PRIMARY KEY (SkillID),
+  KEY (CourseID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Enrollments table
+-- Records every time a user attempts a course
+CREATE TABLE IF NOT EXISTS enrollments (
+  EnrollmentID   INT         NOT NULL AUTO_INCREMENT,
+  UserID         INT         NOT NULL,
+  CourseID       INT         NOT NULL,
+  EnrollmentDate DATE        DEFAULT NULL,
+  Status         VARCHAR(50) DEFAULT NULL,
+  Progress       INT         DEFAULT 0,
+  PRIMARY KEY (EnrollmentID),
+  KEY (UserID),
+  KEY (CourseID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Assessments table
+-- Each course has one assessment
+CREATE TABLE IF NOT EXISTS assessments (
+  AssessmentID   INT          NOT NULL AUTO_INCREMENT,
+  CourseID       INT          NOT NULL,
+  AssessmentName VARCHAR(100) NOT NULL,
+  TotalMarks     INT          NOT NULL,
+  PassMark       INT          NOT NULL,
+  PRIMARY KEY (AssessmentID),
+  KEY (CourseID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Questions table
+-- Stores multiple choice questions for each assessment
+CREATE TABLE IF NOT EXISTS questions (
+  QuestionID    INT          NOT NULL AUTO_INCREMENT,
+  AssessmentID  INT          NOT NULL,
+  QuestionText  VARCHAR(500) NOT NULL,
+  OptionA       VARCHAR(255) NOT NULL,
+  OptionB       VARCHAR(255) NOT NULL,
+  OptionC       VARCHAR(255) NOT NULL,
+  OptionD       VARCHAR(255) NOT NULL,
+  CorrectAnswer CHAR(1)      NOT NULL,
+  PRIMARY KEY (QuestionID),
+  KEY (AssessmentID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Learning materials table
+-- Stores the links to external resources for each course
+CREATE TABLE IF NOT EXISTS learning_materials (
+  MaterialID      INT          NOT NULL AUTO_INCREMENT,
+  CourseID        INT          NOT NULL,
+  SkillID         INT          DEFAULT NULL,
+  MaterialTitle   VARCHAR(255) NOT NULL,
+  MaterialType    VARCHAR(50)  DEFAULT NULL,
+  SourcePlatform  VARCHAR(100) DEFAULT NULL,
+  MaterialURL     TEXT,
+  Description     TEXT,
+  DifficultyLevel VARCHAR(50)  DEFAULT NULL,
+  PRIMARY KEY (MaterialID),
+  KEY (CourseID),
+  KEY (SkillID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Assessment materials table
+-- Links learning materials to assessments
+CREATE TABLE IF NOT EXISTS assessment_materials (
+  AssessmentMaterialID INT NOT NULL AUTO_INCREMENT,
+  AssessmentID         INT NOT NULL,
+  MaterialID           INT NOT NULL,
+  PRIMARY KEY (AssessmentMaterialID),
+  KEY (AssessmentID),
+  KEY (MaterialID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Results table
+-- Stores the score a user gets after submitting an assessment
+CREATE TABLE IF NOT EXISTS results (
+  ResultID      INT         NOT NULL AUTO_INCREMENT,
+  UserID        INT         NOT NULL,
+  AssessmentID  INT         NOT NULL,
+  Score         INT         DEFAULT NULL,
+  PassStatus    VARCHAR(20) DEFAULT NULL,
+  DateCompleted DATE        DEFAULT NULL,
+  PRIMARY KEY (ResultID),
+  KEY (UserID),
+  KEY (AssessmentID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Certificates table
+-- A certificate is awarded when a learner scores 70% or above
+CREATE TABLE IF NOT EXISTS certificates (
+  CertificateID INT  NOT NULL AUTO_INCREMENT,
+  UserID        INT  NOT NULL,
+  CourseID      INT  NOT NULL,
+  IssueDate     DATE DEFAULT NULL,
+  PRIMARY KEY (CertificateID),
+  KEY (UserID),
+  KEY (CourseID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- User skills table
+-- Tracks how many skill points each user has earned per skill
+-- Points from Java and Python both add to the Programming category total
+CREATE TABLE IF NOT EXISTS user_skills (
+  UserSkillID INT NOT NULL AUTO_INCREMENT,
+  UserID      INT NOT NULL,
+  SkillID     INT NOT NULL,
+  TotalPoints INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (UserSkillID),
+  UNIQUE KEY unique_user_skill (UserID, SkillID),
+  KEY (SkillID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Subscriptions table
+-- Tracks which companies have an active Talent Hub subscription
+CREATE TABLE IF NOT EXISTS subscriptions (
+  SubscriptionID INT         NOT NULL AUTO_INCREMENT,
+  CompanyID      INT         NOT NULL,
+  StartDate      DATE        NOT NULL,
+  EndDate        DATE        NOT NULL,
+  Status         VARCHAR(20) NOT NULL DEFAULT 'Active',
+  PRIMARY KEY (SubscriptionID),
+  KEY (CompanyID)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
