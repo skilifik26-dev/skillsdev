@@ -3,66 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style2.css') }}">
+    <title>Register — SkillsDev</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-    {% for category, message in messages %}
-    <p style="padding:12px;border-radius:6px;margin:10px;
-              background:{% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
-              color:{% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
-        {{ message }}
+<!-- Logo bar matching the rest of the app -->
+<nav>
+    <a href="{{ url_for('login') }}">
+        <img src="{{ url_for('static', filename='pictures/skillifik (3).png') }}"
+             alt="SkillsDev" style="height:40px;">
+    </a>
+</nav>
+
+<div class="auth-page">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <p style="padding:12px;border-radius:6px;margin-bottom:14px;font-size:14px;
+                  background:{% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+                  color:{% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
+            {{ message }}
+        </p>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <h1>Create Account</h1>
+    <p>Join SkilliFik and start building your skills.</p>
+
+    <form action="/register" method="POST">
+
+        <label>Full Name</label>
+        <input type="text" name="username" required autofocus>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Phone Number</label>
+        <input type="text" name="phone">
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required>
+
+        <label>I am registering as a</label>
+        <select name="role">
+            <option value="Student">Learner — I want to take courses and build skills</option>
+            <option value="Company">Employer — I want to find and hire skilled candidates</option>
+        </select>
+
+        <p style="margin-top:14px;font-size:13px;color:#888">
+            By registering you agree to SkillsDev's
+            <a href="">Terms of Service</a> &amp;
+            <a href="">Privacy Policy</a>.
+        </p>
+
+        <button class="full" type="submit">Create Account</button>
+
+    </form>
+
+    <p class="auth-link">
+        Already have an account? <a href="{{ url_for('login') }}">Login</a>
     </p>
-    {% endfor %}
-{% endif %}
-{% endwith %}
 
-<div class="container">
-    <div class="card">
-        <h2>Create Account</h2>
-
-        <form action="/register" method="POST">
-
-            <div>
-                <label>Full Name</label>
-                <input type="text" name="username" required>
-            </div>
-
-            <div>
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
-
-            <div>
-                <label>Phone Number</label>
-                <input type="text" name="phone">
-            </div>
-
-            <div>
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
-
-            <div>
-                <label>Confirm Password</label>
-                <input type="password" name="confirm_password">
-            </div>
-
-            <p>By signing up you agree to Skillifik's
-                <a href="">Terms of Service</a> &
-                <a href="">Privacy Policy</a>.
-            </p>
-            <button type="submit" class="btn">Register</button>
-            <p>Already have an account?
-                <a href="{{ url_for('login') }}">login</a>
-            </p>
-
-        </form>
-    </div>
 </div>
 
 </body>
