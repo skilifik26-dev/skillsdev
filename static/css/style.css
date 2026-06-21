@@ -38,6 +38,11 @@ nav a.brand {
     margin-left: 0;
 }
 
+nav img {
+    height: 40px;
+    margin-left: 0;
+}
+
 /* ── PAGE WRAPPER ── */
 .page {
     max-width: 860px;
