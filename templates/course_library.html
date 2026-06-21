@@ -1,46 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Course Library</title>
-        <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style2.css') }}">
-</head>
-<body>
-
-<nav class="navbar">
-    <img src="../static/pictures/skillifik (3).png" alt="SkilliFik logo"/>
-    <div>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('courses') }}">Courses</a>
-        <a href="{{ url_for('profile') }}">My Profile</a>
-        <a href="{{ url_for('talent') }}">Talent Hub</a>
-        <a href="{{ url_for('logout') }}"
-           style="color:rgba(255,255,255,0.4)">Logout</a>
-    </div>
-</nav>
-
-<div class="main_container">
+<div class="row-between">
     <h1>Course Library</h1>
-    <div class="card">
-        <div class="course_lib">
-        {%if courses%}
-            {%for course in courses%}
-                <a href="{{ url_for('course_detail', course_Id = course['CourseID'])}}">
-                    <div>
-                        <h3>{{course['CourseName']}}</h3>
-                        <p>{{course['Description']}}</p>
-                        <p>Skill: {{course['SkillName']}}</p>
-                        <p>Duration: {{course['Duration']}} minutes</p>
-                        <p>Total credits: {{course['SkillCredits']}}</p>
-                    </div>
-                </a>
-            {%endfor%}
-        {%endif%}
-    </div>
-    </div>
 </div>
+<p>Browse all available courses. Your first attempt at every course is always free.</p>
 
+{% if courses %}
+<div class="courses-grid">
+    {% for course in courses %}
+    <a href="{{ url_for('course_detail', course_Id=course['CourseID']) }}" style="text-decoration:none">
+        <div class="course-card">
+            <h3>{{ course['CourseName'] }}</h3>
+            <p>{{ course['Description'] }}</p>
+            <p style="margin-top:8px">
+                <span class="skill-label">{{ course['SkillName'] }}</span>
+            </p>
+            <p class="muted" style="margin-top:8px">
+                {{ course['Duration'] }} min &nbsp;·&nbsp; {{ course['SkillCredits'] }} credits
+            </p>
+            <p style="margin-top:8px">
+                {% if course['attempts'] == 0 %}
+                    <span class="badge-free">Free</span>
+                {% elif course['attempts'] == 1 %}
+                    <span class="badge-retake">Retake: R50</span>
+                {% elif course['attempts'] == 2 %}
+                    <span class="badge-retake">Final Attempt: R100</span>
+                {% else %}
+                    <span class="badge-locked">Locked</span>
+                {% endif %}
+            </p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p>No courses available yet.</p>
+{% endif %}
 
-</body>
-</html>
+{% endblock %}
