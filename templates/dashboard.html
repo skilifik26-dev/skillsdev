@@ -81,6 +81,10 @@
     {% for course in unattempted %}
     <a href="{{ url_for('course_detail', course_Id=course['CourseID']) }}" style="text-decoration:none">
         <div class="course-card">
+            <div>
+                <img class="coursePicture" 
+                src="{{'../static/pictures/course picture/' ~ course['CourseName'] ~ '.jpg'}}" />
+            </div>
             <h3>{{ course['CourseName'] }}</h3>
             <p>{{ course['Description'] }}</p>
             <p style="margin-top:8px"><span class="skill-label">{{ course['SkillName'] }}</span></p>

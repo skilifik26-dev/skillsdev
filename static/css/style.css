@@ -292,6 +292,12 @@ tr:last-child td {
     font-weight: bold;
 }
 
+.coursePicture {
+    width: 230px;
+    box-sizing: ;
+    
+}
+
 /* ══════════════════════════════
    RESULT PAGE
 ══════════════════════════════ */

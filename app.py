@@ -232,7 +232,10 @@ def courses():
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
 
-    return render_template('course_library.html', courses=courses)
+    return render_template('course_library.html', 
+                           courses = courses, 
+                           coursePic = " "
+                           )
 
 # ── COURSE DETAIL ─────────────────────────────────────────────────────────────
 @app.route('/course_detail/<int:course_Id>')
