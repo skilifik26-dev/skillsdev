@@ -14,7 +14,7 @@ body {
 /* ── NAVBAR ── */
 nav {
     background: #1F3864;
-    padding: 14px 24px;
+    padding: 5px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,13 +31,6 @@ nav a:hover {
     color: white;
 }
 
-nav a.brand {
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    margin-left: 0;
-}
-
 nav img {
     height: 40px;
     margin-left: 0;
@@ -45,7 +38,7 @@ nav img {
 
 /* ── PAGE WRAPPER ── */
 .page {
-    max-width: 860px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 28px 16px;
 }
@@ -247,6 +240,11 @@ tr:last-child td {
     padding: 16px;
 }
 
+.course-card:hover {
+    background: rgb(249, 244, 244);
+    border: 1px solid #888;
+}
+
 .course-card h3 {
     margin-top: 0;
     margin-bottom: 6px;
@@ -293,9 +291,9 @@ tr:last-child td {
 }
 
 .coursePicture {
-    width: 230px;
-    box-sizing: ;
-    
+    width: 313px;
+    height: 175px;
+    border-radius: 5px;   
 }
 
 /* ══════════════════════════════
@@ -354,4 +352,26 @@ button.secondary {
 
 button.secondary:hover {
     background: #f0f0f0;
+}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer {
+    background: #1F3864;
+    padding: 5px 10px;
+    display: block;
+    justify-items: center;
+}
+
+footer a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 20px;
+    display: block;
+}
+
+footer a:hover {
+    color: white;
 }
