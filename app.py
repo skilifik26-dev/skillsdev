@@ -1,31 +1,14 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash
-import mysql.connector
+from init_db import get_db, init_db
+from datetime import date
 
 app = Flask(__name__)
 app.secret_key = 'skillsdev_secret_key'
 
-# ── DATABASE CONNECTION ────────────────────────────────────────────────────────
-IS_LOCAL = True
 
-if IS_LOCAL:
-    DB_CONFIG = {
-        'host'    : 'localhost',
-        'user'    : 'root',
-        'password': '',
-        'database': 'skillsdevelopmentdb'
-    }
-else:
-    DB_CONFIG = {
-        'host'    : 'yourusername.mysql.pythonanywhere-services.com',
-        'user'    : 'yourusername',
-        'password': 'pythonanywhere_db_password',
-        'database': 'yourusername$skillsdevelopmentdb'
-    }
 
-def get_db():
-    return mysql.connector.connect(**DB_CONFIG)
+# ── HELPER FUNCTION ───────────────────────────────────────────────────────────
 
-# ── HELPER ────────────────────────────────────────────────────────────────────
 def get_skill_level(pts):
     if pts >= 90:   return "Expert"
     elif pts >= 70: return "Advanced"
@@ -35,7 +18,10 @@ def get_skill_level(pts):
 
 app.jinja_env.globals['get_skill_level'] = get_skill_level
 
+
+
 # ── ROUTES ────────────────────────────────────────────────────────────────────
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -49,26 +35,28 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         try:
             conn   = get_db()
-            cursor = conn.cursor(dictionary=True)
+            cursor = conn.cursor()
             cursor.execute(
-                'SELECT * FROM users WHERE Username = %s AND Password = %s',
+                'SELECT * FROM users WHERE Username = ? AND Password = ?',
                 (username, password)
             )
             user = cursor.fetchone()
-            cursor.close()
             conn.close()
 
             if user:
-                session['user']    = user
-                session['user_id'] = user['UserID']
-                session['role']    = user['Role']
+                session['user_id']  = user['UserID']
+                session['username'] = user['Username']
+                session['role']     = user['Role']
+                session['user']     = dict(user)
                 if user['Role'] == 'Company':
                     return redirect(url_for('talent'))
                 return redirect(url_for('dashboard'))
             else:
                 flash('Incorrect username or password.', 'error')
+
         except Exception as e:
             flash(f'Database error: {str(e)}', 'error')
 
@@ -83,28 +71,29 @@ def register():
         password = request.form['password']
         phone    = request.form.get('phone', '')
         role     = request.form.get('role', 'Student')
+
         try:
             conn   = get_db()
-            cursor = conn.cursor(dictionary=True)
+            cursor = conn.cursor()
+
             cursor.execute(
-                'SELECT UserID FROM users WHERE Username = %s OR Email = %s',
+                'SELECT UserID FROM users WHERE Username = ? OR Email = ?',
                 (username, email)
             )
             if cursor.fetchone():
                 flash('Username or email already registered.', 'error')
+                conn.close()
             else:
                 cursor.execute(
                     '''INSERT INTO users (Username, Email, Password, PhoneNumber, Role)
-                       VALUES (%s, %s, %s, %s, %s)''',
+                       VALUES (?, ?, ?, ?, ?)''',
                     (username, email, password, phone, role)
                 )
                 conn.commit()
-                flash('Account created! Please log in.', 'success')
-                cursor.close()
                 conn.close()
+                flash('Account created! Please log in.', 'success')
                 return redirect(url_for('login'))
-            cursor.close()
-            conn.close()
+
         except Exception as e:
             flash(f'Database error: {str(e)}', 'error')
 
@@ -132,7 +121,7 @@ def dashboard():
 
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration, c.Description,
@@ -141,55 +130,52 @@ def dashboard():
             FROM courses c
             LEFT JOIN skills      s ON s.CourseID = c.CourseID
             LEFT JOIN enrollments e ON e.CourseID = c.CourseID
-                                    AND e.UserID  = %s
-            GROUP BY c.CourseID, c.CourseName, c.Duration,
-                     c.Description, c.SkillCredits, s.SkillName
+                                    AND e.UserID  = ?
+            GROUP BY c.CourseID
         ''', (user_id,))
-        courses = cursor.fetchall()
+        courses = [dict(row) for row in cursor.fetchall()]
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, e.Status
             FROM enrollments e
             JOIN courses c ON e.CourseID = c.CourseID
-            WHERE e.UserID = %s
+            WHERE e.UserID = ?
             ORDER BY e.EnrollmentDate DESC
             LIMIT 5
         ''', (user_id,))
-        recent = cursor.fetchall()
+        recent = [dict(row) for row in cursor.fetchall()]
 
-        # Group points by skill category so Java + Python combine into Programming
         cursor.execute('''
             SELECT s.SkillCategory AS SkillName,
                    SUM(us.TotalPoints) AS TotalPoints
             FROM user_skills us
             JOIN skills s ON us.SkillID = s.SkillID
-            WHERE us.UserID = %s
+            WHERE us.UserID = ?
             GROUP BY s.SkillCategory
             ORDER BY TotalPoints DESC
         ''', (user_id,))
-        skill_scores = cursor.fetchall()
+        skill_scores = [dict(row) for row in cursor.fetchall()]
 
-        cursor.execute('''
-            SELECT COALESCE(SUM(TotalPoints), 0) AS total
-            FROM user_skills WHERE UserID = %s
-        ''', (user_id,))
+        cursor.execute(
+            'SELECT COALESCE(SUM(TotalPoints), 0) AS total FROM user_skills WHERE UserID = ?',
+            (user_id,)
+        )
         total_pts = cursor.fetchone()['total']
 
-        cursor.execute('''
-            SELECT COUNT(*) AS total FROM enrollments
-            WHERE UserID = %s AND Status = "Pass"
-        ''', (user_id,))
+        cursor.execute(
+            'SELECT COUNT(*) AS total FROM enrollments WHERE UserID = ? AND Status = "Pass"',
+            (user_id,)
+        )
         courses_done = cursor.fetchone()['total']
 
         cursor.execute('''
             SELECT COUNT(DISTINCT s.SkillCategory) AS total
             FROM user_skills us
             JOIN skills s ON us.SkillID = s.SkillID
-            WHERE us.UserID = %s AND us.TotalPoints > 0
+            WHERE us.UserID = ? AND us.TotalPoints > 0
         ''', (user_id,))
         skills_unlocked = cursor.fetchone()['total']
 
-        cursor.close()
         conn.close()
 
     except Exception as e:
@@ -214,7 +200,7 @@ def courses():
     courses = []
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration, c.Description,
                    c.SkillCredits, s.SkillName,
@@ -222,20 +208,15 @@ def courses():
             FROM courses c
             LEFT JOIN skills      s ON s.CourseID = c.CourseID
             LEFT JOIN enrollments e ON e.CourseID = c.CourseID
-                                    AND e.UserID  = %s
-            GROUP BY c.CourseID, c.CourseName, c.Duration,
-                     c.Description, c.SkillCredits, s.SkillName
+                                    AND e.UserID  = ?
+            GROUP BY c.CourseID
         ''', (session['user_id'],))
-        courses = cursor.fetchall()
-        cursor.close()
+        courses = [dict(row) for row in cursor.fetchall()]
         conn.close()
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
 
-    return render_template('course_library.html', 
-                           courses = courses, 
-                           coursePic = " "
-                           )
+    return render_template('course_library.html', courses=courses)
 
 # ── COURSE DETAIL ─────────────────────────────────────────────────────────────
 @app.route('/course_detail/<int:course_Id>')
@@ -247,25 +228,26 @@ def course_detail(course_Id):
     attempts = 0
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration,
                    c.Description, c.SkillCredits, s.SkillName
             FROM courses c
             LEFT JOIN skills s ON s.CourseID = c.CourseID
-            WHERE c.CourseID = %s
+            WHERE c.CourseID = ?
         ''', (course_Id,))
-        course = cursor.fetchone()
+        row = cursor.fetchone()
+        if row:
+            course = dict(row)
 
-        cursor.execute('''
-            SELECT COUNT(*) AS attempts FROM enrollments
-            WHERE UserID = %s AND CourseID = %s
-        ''', (session['user_id'], course_Id))
+        cursor.execute(
+            'SELECT COUNT(*) AS attempts FROM enrollments WHERE UserID = ? AND CourseID = ?',
+            (session['user_id'], course_Id)
+        )
         attempts = cursor.fetchone()['attempts']
-
-        cursor.close()
         conn.close()
+
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
         return redirect(url_for('courses'))
@@ -288,27 +270,28 @@ def start_course(course_id):
     materials = []
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration,
                    c.Description, c.SkillCredits, s.SkillName
             FROM courses c
             LEFT JOIN skills s ON s.CourseID = c.CourseID
-            WHERE c.CourseID = %s
+            WHERE c.CourseID = ?
         ''', (course_id,))
-        course = cursor.fetchone()
+        row = cursor.fetchone()
+        if row:
+            course = dict(row)
 
         cursor.execute('''
             SELECT MaterialTitle, MaterialType, SourcePlatform,
                    MaterialURL, Description, DifficultyLevel
             FROM learning_materials
-            WHERE CourseID = %s
+            WHERE CourseID = ?
         ''', (course_id,))
-        materials = cursor.fetchall()
-
-        cursor.close()
+        materials = [dict(row) for row in cursor.fetchall()]
         conn.close()
+
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
         return redirect(url_for('courses'))
@@ -331,7 +314,7 @@ def assessment(course_id):
     questions = []
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration, c.Description,
@@ -340,22 +323,24 @@ def assessment(course_id):
             FROM courses c
             LEFT JOIN skills      s ON s.CourseID = c.CourseID
             LEFT JOIN assessments a ON a.CourseID = c.CourseID
-            WHERE c.CourseID = %s
+            WHERE c.CourseID = ?
         ''', (course_id,))
-        course = cursor.fetchone()
+        row = cursor.fetchone()
+        if row:
+            course = dict(row)
 
         if course and course['AssessmentID']:
             cursor.execute('''
                 SELECT QuestionID, QuestionText,
                        OptionA, OptionB, OptionC, OptionD
                 FROM questions
-                WHERE AssessmentID = %s
+                WHERE AssessmentID = ?
                 ORDER BY QuestionID
             ''', (course['AssessmentID'],))
-            questions = cursor.fetchall()
+            questions = [dict(row) for row in cursor.fetchall()]
 
-        cursor.close()
         conn.close()
+
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
         return redirect(url_for('courses'))
@@ -385,7 +370,7 @@ def submit_assessment(course_id):
 
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
         cursor.execute('''
             SELECT c.CourseID, c.CourseName, c.Duration, c.Description,
@@ -394,15 +379,17 @@ def submit_assessment(course_id):
             FROM courses c
             LEFT JOIN skills      s ON s.CourseID = c.CourseID
             LEFT JOIN assessments a ON a.CourseID = c.CourseID
-            WHERE c.CourseID = %s
+            WHERE c.CourseID = ?
         ''', (course_id,))
-        course = cursor.fetchone()
+        row = cursor.fetchone()
+        if row:
+            course = dict(row)
 
         if course and course['AssessmentID']:
-            cursor.execute('''
-                SELECT QuestionID, CorrectAnswer
-                FROM questions WHERE AssessmentID = %s
-            ''', (course['AssessmentID'],))
+            cursor.execute(
+                'SELECT QuestionID, CorrectAnswer FROM questions WHERE AssessmentID = ?',
+                (course['AssessmentID'],)
+            )
             questions = cursor.fetchall()
 
             correct = sum(
@@ -423,46 +410,49 @@ def submit_assessment(course_id):
 
             pass_status = 'Pass' if score >= 50 else 'Fail'
 
+            # Save result
             cursor.execute('''
                 INSERT INTO results (UserID, AssessmentID, Score, PassStatus, DateCompleted)
-                VALUES (%s, %s, %s, %s, CURDATE())
-            ''', (user_id, course['AssessmentID'], score, pass_status))
+                VALUES (?, ?, ?, ?, ?)
+            ''', (user_id, course['AssessmentID'], score, pass_status, str(date.today())))
 
+            # Save enrollment
             cursor.execute('''
                 INSERT INTO enrollments (UserID, CourseID, EnrollmentDate, Status, Progress)
-                VALUES (%s, %s, CURDATE(), %s, %s)
-            ''', (user_id, course_id, pass_status, score))
+                VALUES (?, ?, ?, ?, ?)
+            ''', (user_id, course_id, str(date.today()), pass_status, score))
 
+            # Update skill points
             if credits > 0 and course['SkillID']:
-                cursor.execute('''
-                    SELECT UserSkillID FROM user_skills
-                    WHERE UserID = %s AND SkillID = %s
-                ''', (user_id, course['SkillID']))
+                cursor.execute(
+                    'SELECT UserSkillID FROM user_skills WHERE UserID = ? AND SkillID = ?',
+                    (user_id, course['SkillID'])
+                )
                 if cursor.fetchone():
-                    cursor.execute('''
-                        UPDATE user_skills SET TotalPoints = TotalPoints + %s
-                        WHERE UserID = %s AND SkillID = %s
-                    ''', (credits, user_id, course['SkillID']))
+                    cursor.execute(
+                        'UPDATE user_skills SET TotalPoints = TotalPoints + ? WHERE UserID = ? AND SkillID = ?',
+                        (credits, user_id, course['SkillID'])
+                    )
                 else:
-                    cursor.execute('''
-                        INSERT INTO user_skills (UserID, SkillID, TotalPoints)
-                        VALUES (%s, %s, %s)
-                    ''', (user_id, course['SkillID'], credits))
+                    cursor.execute(
+                        'INSERT INTO user_skills (UserID, SkillID, TotalPoints) VALUES (?, ?, ?)',
+                        (user_id, course['SkillID'], credits)
+                    )
 
+            # Award certificate if 70%+
             if score >= 70:
-                cursor.execute('''
-                    SELECT CertificateID FROM certificates
-                    WHERE UserID = %s AND CourseID = %s
-                ''', (user_id, course_id))
+                cursor.execute(
+                    'SELECT CertificateID FROM certificates WHERE UserID = ? AND CourseID = ?',
+                    (user_id, course_id)
+                )
                 if not cursor.fetchone():
-                    cursor.execute('''
-                        INSERT INTO certificates (UserID, CourseID, IssueDate)
-                        VALUES (%s, %s, CURDATE())
-                    ''', (user_id, course_id))
+                    cursor.execute(
+                        'INSERT INTO certificates (UserID, CourseID, IssueDate) VALUES (?, ?, ?)',
+                        (user_id, course_id, str(date.today()))
+                    )
 
             conn.commit()
 
-        cursor.close()
         conn.close()
 
     except Exception as e:
@@ -489,36 +479,34 @@ def profile():
 
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
-        # Group points by skill category so Java + Python combine into Programming
         cursor.execute('''
             SELECT s.SkillCategory AS SkillName,
                    SUM(us.TotalPoints) AS TotalPoints
             FROM user_skills us
             JOIN skills s ON us.SkillID = s.SkillID
-            WHERE us.UserID = %s
+            WHERE us.UserID = ?
             GROUP BY s.SkillCategory
             ORDER BY TotalPoints DESC
         ''', (user_id,))
-        skills = cursor.fetchall()
+        skills = [dict(row) for row in cursor.fetchall()]
 
-        cursor.execute('''
-            SELECT COALESCE(SUM(TotalPoints), 0) AS total
-            FROM user_skills WHERE UserID = %s
-        ''', (user_id,))
+        cursor.execute(
+            'SELECT COALESCE(SUM(TotalPoints), 0) AS total FROM user_skills WHERE UserID = ?',
+            (user_id,)
+        )
         total_pts = cursor.fetchone()['total']
 
         cursor.execute('''
             SELECT c.CourseName, cert.IssueDate
             FROM certificates cert
             JOIN courses c ON cert.CourseID = c.CourseID
-            WHERE cert.UserID = %s
+            WHERE cert.UserID = ?
             ORDER BY cert.IssueDate DESC
         ''', (user_id,))
-        certs = cursor.fetchall()
+        certs = [dict(row) for row in cursor.fetchall()]
 
-        cursor.close()
         conn.close()
 
     except Exception as e:
@@ -537,58 +525,55 @@ def talent():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    learners    = []
-    subscribed  = False
-    company_id  = session['user_id']
+    learners   = []
+    subscribed = False
+    company_id = session['user_id']
+    today      = str(date.today())
 
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
-        # Check if this company has an active subscription
         cursor.execute('''
             SELECT SubscriptionID FROM subscriptions
-            WHERE CompanyID = %s AND Status = "Active" AND EndDate >= CURDATE()
-        ''', (company_id,))
+            WHERE CompanyID = ? AND Status = "Active" AND EndDate >= ?
+        ''', (company_id, today))
         subscribed = cursor.fetchone() is not None
 
-        # Get all learners with their total points
         cursor.execute('''
             SELECT u.UserID, u.Username, u.Email, u.PhoneNumber,
                    COALESCE(SUM(us.TotalPoints), 0) AS total
             FROM users u
             LEFT JOIN user_skills us ON us.UserID = u.UserID
             WHERE u.Role = "Student"
-            GROUP BY u.UserID, u.Username, u.Email, u.PhoneNumber
+            GROUP BY u.UserID
             ORDER BY total DESC
         ''')
-        learners = cursor.fetchall()
+        learners = [dict(row) for row in cursor.fetchall()]
 
-        # Attach skill category scores per learner
         for learner in learners:
             cursor.execute('''
                 SELECT s.SkillCategory AS SkillName,
                        SUM(us.TotalPoints) AS TotalPoints
                 FROM user_skills us
                 JOIN skills s ON us.SkillID = s.SkillID
-                JOIN users  u ON us.UserID  = u.UserID
-                WHERE u.Username = %s AND us.TotalPoints > 0
+                WHERE us.UserID = ? AND us.TotalPoints > 0
                 GROUP BY s.SkillCategory
                 ORDER BY TotalPoints DESC
-            ''', (learner['Username'],))
+            ''', (learner['UserID'],))
             rows = cursor.fetchall()
             learner['skills'] = ' | '.join(
                 f"{r['SkillName']}: {r['TotalPoints']} pts" for r in rows
             )
 
-        cursor.close()
         conn.close()
 
     except Exception as e:
         flash(f'Database error: {str(e)}', 'error')
 
-    return render_template('talent.html', learners=learners, subscribed=subscribed)
-
+    return render_template('talent.html',
+        learners   = learners,
+        subscribed = subscribed)
 
 # ── SUBSCRIBE ─────────────────────────────────────────────────────────────────
 @app.route('/subscribe', methods=['POST'])
@@ -597,29 +582,29 @@ def subscribe():
         return redirect(url_for('login'))
 
     company_id = session['user_id']
+    today      = str(date.today())
+
     try:
         conn   = get_db()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
 
-        # Check if already subscribed
         cursor.execute('''
             SELECT SubscriptionID FROM subscriptions
-            WHERE CompanyID = %s AND Status = "Active" AND EndDate >= CURDATE()
-        ''', (company_id,))
-        existing = cursor.fetchone()
+            WHERE CompanyID = ? AND Status = "Active" AND EndDate >= ?
+        ''', (company_id, today))
 
-        if not existing:
-            # Create a 30 day subscription (simulated payment)
+        if cursor.fetchone():
+            flash('You already have an active subscription.', 'success')
+        else:
+            from datetime import timedelta
+            end_date = str(date.today() + timedelta(days=30))
             cursor.execute('''
                 INSERT INTO subscriptions (CompanyID, StartDate, EndDate, Status)
-                VALUES (%s, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), "Active")
-            ''', (company_id,))
+                VALUES (?, ?, ?, "Active")
+            ''', (company_id, today, end_date))
             conn.commit()
             flash('Subscription activated! You can now contact learners.', 'success')
-        else:
-            flash('You already have an active subscription.', 'success')
 
-        cursor.close()
         conn.close()
 
     except Exception as e:
@@ -627,6 +612,12 @@ def subscribe():
 
     return redirect(url_for('talent'))
 
+# ── ABOUT ─────────────────────────────────────────────────────────────────────
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 # ── RUN ───────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
