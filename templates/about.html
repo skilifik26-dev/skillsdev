@@ -1,316 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Our Team</title>
+{% extends 'base.html' %}
+{% block content %}
 
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family: Arial, sans-serif;
-        }
+<div class="container">
+    <h1>Meet Our Team</h1>
+    <p class="subtitle">
+        The talented individuals behind the project.
+    </p>
 
-        body{
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
-            min-height:100vh;
-            margin: 0;
-            padding: 0;
-        }
-            
-nav {
-    background: #1F3864;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    <div class="team-grid">
 
-nav a {
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 14px;
-    margin-left: 20px;
-}
-
-ul {
-    display: none;
-}
-
-nav a:hover {
-    color: white;
-}
-
-nav img {
-    height: 40px;
-    margin-left: 0;
-}
-
-.login_and_reg_nav {
-    justify-content: center;
-}
-
-/* ── DROPDOWN MENU ── */
-.dropbtn {
-    margin: 0;
-    cursor: pointer;
-}
-
-.dropdown-menu {
-  position: relative;
-  display: none;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #1F3864;
-  min-width: max-content;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  margin-top: 5px;
-  padding: 5.5px;
-}
-
-.dropdown-content a {
-  color: white;
-  padding: 15px 5px;
-  text-decoration: none;
-  display: block;
-  margin: 0;
-}
-
-.dropdown-content a:hover {
-    color: black;
-}
-
-.show {
-    display:block;
-}
-
-
-
-        .container{
-            width:90%;
-            max-width:900px;
-            margin-top: 90px;
-            background:#fff;
-            border-radius:20px;
-            padding:40px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.3);
-            align-items: center;
-            justify-content: center;
-            margin: 100px auto 0;
-        }
- 
-
-
-        h1{
-            text-align:center;
-            color:#1e3a8a;
-            margin-bottom:10px;
-        }
-
-        .subtitle{
-            text-align:center;
-            color:#555;
-            margin-bottom:30px;
-        }
-
-        .team-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-            gap:20px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card{
-            background:#f8fafc;
-            align-items: center;
-            justify-content: center;
-            padding:25px;
-            border-radius:15px;
-            text-align:center;
-            transition:0.3s;
-            border-left:5px solid #1e3a8a;
-            
-        }
-
-        .card:hover{
-            transform:translateY(-8px);
-            box-shadow:0 8px 20px rgba(0,0,0,0.2);
-        }
-
-        .name{
-            font-size:22px;
-            font-weight:bold;
-            color:#1e3a8a;
-            margin-bottom:10px;
-        }
-
-        .role{
-            color:#555;
-            font-size:17px;
-        }
-
-               
-footer {
-    background: #1F3864;
-    padding: 5px 10px;
-    height: 100px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 80px;
-    
-}
-
-footer div {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
-
-footer p{
-    color: rgba(255,255,255,0.75);
-    margin: 0;
-}
-
-footer a {
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 14px;
-    margin-left: 20px;
-    display: block;
-}
-
-footer a:hover {
-    color: white;
-}
-
-
-@media (max-width: 900px) {
-    .bar-menu {
-        display: none;
-    }
-
-    .dropdown-menu {
-        position:static;
-        display: block;
-    }
-
-    footer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    footer img {
-        display: none
-    }
-}
-
-
-
-
-        @media(max-width:600px){
-            .container{
-                padding:25px;
-            }
-
-            h1{
-                font-size:28px;
-            }
-        }
-
-
-
-    </style>
-</head>
-<body>
-    <nav>
-        <a href="{{ url_for('dashboard') }}">
-            <img src="{{ url_for('static', filename='pictures/skillifik1.png') }}"
-                alt="SkillsDev" style="height:40px;">
-        </a>
-        <div class="bar-menu">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('courses') }}">Courses</a>
-            <a href="{{ url_for('profile') }}">My Profile</a>
-            <a href="{{ url_for('talent') }}">Talent Hub</a>
-            <a href="{{ url_for('logout') }}"
-            style="color:rgba(255,255,255,0.4)">Logout</a>
+        <div class="card">
+            <div class="name">Nkululeko Masina</div>
+            <div class="role">Team Leader</div>
         </div>
 
-        <div class="dropdown-menu">
-            <button onclick="myFunction()" class="dropbtn">
-                <img src="{{url_for('static', filename='pictures/menu_icon.png')}}" />
-            </button>
-            <div id="myDropdown" class="dropdown-content">
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('courses') }}">Courses</a>
-                <a href="{{ url_for('profile') }}">My Profile</a>
-                <a href="{{ url_for('talent') }}">Talent Hub</a>
-                <a href="{{ url_for('logout') }}"
-                    style="color:rgba(255,255,255,0.4)">Logout</a>
-            </div>
+        <div class="card">
+            <div class="name">Dominique Minaar</div>
+            <div class="role">Developer</div>
         </div>
-    </nav>
 
-    <div class="container">
-        <h1>Meet Our Team</h1>
-        <p class="subtitle">
-            The talented individuals behind the project.
-        </p>
-
-        <div class="team-grid">
-
-            <div class="card">
-                <div class="name">Nkululeko Masina</div>
-                <div class="role">Team Leader</div>
-            </div>
-
-            <div class="card">
-                <div class="name">Dominique Minaar</div>
-                <div class="role">Developer</div>
-            </div>
-
-            <div class="card">
-                <div class="name">Flavi Munganga</div>
-                <div class="role">Developer</div>
-            </div>
-
-            <div class="card">
-                <div class="name">Luzanne Swanepoel</div>
-                <div class="role">Network Administrator</div>
-            </div>
-
-            <div class="card">
-                <div class="name">Khanyi Mahlangu</div>
-                <div class="role">Database Administrator</div>
-            </div>
-
+        <div class="card">
+            <div class="name">Flavi Munganga</div>
+            <div class="role">Developer</div>
         </div>
+
+        <div class="card">
+            <div class="name">Luzanne Swanepoel</div>
+            <div class="role">Network Administrator</div>
+        </div>
+
+        <div class="card">
+            <div class="name">Khanyi Mahlangu</div>
+            <div class="role">Database Administrator</div>
+        </div>
+
     </div>
+</div>
 
-    
-    <footer>
-        <img src="{{ url_for('static', filename='pictures/skillifik1.png') }}"
-            alt="SkillsDev" style="height:40px;">
-        <div>
-            <a href="{{ url_for('about') }}">About</a>
-            <a href="">Courses</a>
-            <a href="">Contacts</a>
-            <a href="">Career Paths</a>
-        </div>
-        <p>copyright &copy;2026. All Rights Reserved</p> 
-            
-    </footer>
-
-</body>
-</html>
+{% endblock %}
